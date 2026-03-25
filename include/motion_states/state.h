@@ -34,10 +34,9 @@ class MotionState {
 
   public:
     void updateImuOffsets(const float new_omega, const float new_psi) {
-        // omega_offset = RAD_TO_DEG_F(new_omega);
-        // psi_offset = RAD_TO_DEG_F(new_psi);
-        omega_offset = new_omega;
-        psi_offset = new_psi;
+        // 低通滤波：避免 IMU 噪声引起振荡
+        omega_offset = omega_offset * 0.85f + new_omega * 0.15f;
+        psi_offset = psi_offset * 0.85f + new_psi * 0.15f;
     }
     virtual ~MotionState() {}
     virtual void begin() { ESP_LOGI("Gait Planner", "Starting %s", name()); }

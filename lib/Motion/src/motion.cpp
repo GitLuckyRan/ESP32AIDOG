@@ -56,7 +56,7 @@ bool MotionService::update(Peripherals* peripherals) {
     int64_t now = esp_timer_get_time();
     float dt = (now - lastUpdate) / 1000000.0f;
     lastUpdate = now;
-    state->updateImuOffsets(peripherals->angleY(), peripherals->angleX());
+    state->updateImuOffsets(peripherals->angleY(), -peripherals->angleX());
     state->step(body_state, dt);
     kinematics.calculate_inverse_kinematics(body_state, new_angles);
 

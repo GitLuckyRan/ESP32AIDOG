@@ -94,18 +94,14 @@ class WalkState : public MotionState {
     void step(body_state_t &body_state, float dt = 0.02f) override {
 
 
-        target_body_state.xm = 0.02f;       // 重心前移，减轻后腿负载
-        target_body_state.ym = 0.16f;        // 站高 16 厘米
-        target_body_state.omega = 2.0f;      // roll 补偿：正值向左倾，抬高右侧（根据实际效果微调）
-        target_gait_state.step_x = 0.025f;    // 步长 2.5 厘米
+        target_body_state.ym = 0.15f;        // 站高 16 厘米
+        target_gait_state.step_x = 0.03f;    // 步长 2.5 厘米
         target_gait_state.step_z = 0.0f;
         target_gait_state.step_velocity = 1.0f; // 步频 1Hz
-        target_gait_state.step_height = 0.04f;  // 抬脚 4 厘米（原来 2cm 太低，后腿抬不起来）
-        target_gait_state.step_depth = 0.01f;
+        target_gait_state.step_height = 0.02f;  // 抬脚 4 厘米（原来 2cm 太低，后腿抬不起来）
+        target_gait_state.step_depth = 0.02f;
         float  smoothing_factor = 0.8f;
-        body_state.xm = lerp(body_state.xm, target_body_state.xm, smoothing_factor);
         body_state.ym = lerp(body_state.ym, target_body_state.ym, smoothing_factor);
-        body_state.omega = lerp(body_state.omega, target_body_state.omega, smoothing_factor);
         body_state.psi = lerp(body_state.psi, target_body_state.psi, smoothing_factor);
         gait_state.step_height = target_gait_state.step_height;
         gait_state.step_x = lerp(gait_state.step_x, target_gait_state.step_x, smoothing_factor);

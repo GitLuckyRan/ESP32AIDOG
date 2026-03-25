@@ -46,11 +46,15 @@ using ServoSettings = api_ServoSettings;
 //     {302, -1, 0, 2.33f, "Servo4"}, {282, -1, 45, 2.48f, "Servo5"},  {282, -1, -90, 2.33f, "Servo6"},
 //     {302, 1, 0, 2.48f, "Servo7"},  {322, 1, -45, 2.48f, "Servo8"},  {322, 1, 90, 2.48f, "Servo9"},
 //     {302, 1, 0, 2.48f, "Servo10"}, {302, -1, 45, 2.48f, "Servo11"}, {322, -1, -90, 2.48f, "Servo12"}};
+    // {282, -1, 0, 2.33f, "Servo1"}, {322, 1, -45, 2.48f, "Servo2"},  {302, 1, 90, 2.48f, "Servo3"},
+    // {272, -1, 0, 2.33f, "Servo4"}, {282, -1, 45, 2.48f, "Servo5"},  {302, -1, -90, 2.48f, "Servo6"},
+    // {302, 1, 0, 2.48f, "Servo7"},  {302, 1, -45, 2.48f, "Servo8"},  {302, 1, 90, 2.48f, "Servo9"},
+    // {302, 1, 0, 2.48f, "Servo10"}, {292, -1, 45, 2.48f, "Servo11"}, {302, -1, -90, 2.48f, "Servo12"}};
 const api_Servo defaults[12] = {
-    {282, -1, 0, 2.33f, "Servo1"}, {322, 1, -45, 2.48f, "Servo2"},  {302, 1, 90, 2.48f, "Servo3"},
+    {282, -1, 0, 2.33f, "Servo1"}, {322, 1, -45, 2.48f, "Servo2"},  {282, 1, 90, 2.48f, "Servo3"},
     {272, -1, 0, 2.33f, "Servo4"}, {282, -1, 45, 2.48f, "Servo5"},  {302, -1, -90, 2.48f, "Servo6"},
     {302, 1, 0, 2.48f, "Servo7"},  {302, 1, -45, 2.48f, "Servo8"},  {302, 1, 90, 2.48f, "Servo9"},
-    {302, 1, 0, 2.48f, "Servo10"}, {272, -1, 45, 2.48f, "Servo11"}, {302, -1, -90, 2.48f, "Servo12"}};
+    {302, 1, 0, 2.48f, "Servo10"}, {302, -1, 45, 2.48f, "Servo11"}, {302, -1, -90, 2.48f, "Servo12"}};
 
 inline ServoSettings ServoSettings_defaults() {
     ServoSettings settings = {};
@@ -122,7 +126,9 @@ class ServoController {
 
     void calculatePWM() {
         uint16_t pwms[12];
-       
+        static unsigned long lastPrint = 0;
+        bool shouldPrint = (millis() - lastPrint > 1000);  // 每秒打印一次
+
         for (int i = 0; i < 12; i++) {
 
             angles[i] = lerp(angles[i], target_angles[i], smoothing_factor);
@@ -130,11 +136,10 @@ class ServoController {
             float angle = servo.direction * angles[i] + servo.center_angle;
             uint16_t pwm = angle * servo.conversion + servo.center_pwm;
             pwms[i] = pwm = clamp(pwm, 120, 500);
-            // Serial.printf("Servo %d -> Angle: %6.2f°, PWM: %4d\n", i + 1, angles[i], pwm);
         }
 
+        // 对比左后腿(7,8,9)和右后腿(10,11,12)的角度和PWM
         for (uint8_t i = 0; i < 12; i++) {
-    // 忽略所有计算出的动作，直接发送预设的中位脉冲值
             pca9685.setPWM(i, 0, pwms[i]);
         }
 
