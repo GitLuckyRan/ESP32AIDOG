@@ -20,20 +20,9 @@ class MotionService {
     void begin();
     body_state_t& getBodyState() { return body_state; }
 
-    // void handleAngles(const socket_message_AnglesData& data);
+    void handleWalkGait(bool trot);
 
-    // void handleInput(const socket_message_ControllerData& data);
-
-    // void handleWalkGait(const socket_message_WalkGaitData& data);
-
-    // void handleMode(const socket_message_ModeData& data);
-    void handleAngles();
-
-    void handleInput();
-
-    void handleWalkGait();
-
-    void handleMode();
+    void handleMode(const String& cmd);
 
 
     void setState(MotionState* newState);
@@ -55,6 +44,7 @@ class MotionService {
     friend class MotionState;
 
     MotionState* state = nullptr;
+    MOTION_STATE currentMode = MOTION_STATE::STAND;
 
     RestState restState;
     StandState standState;

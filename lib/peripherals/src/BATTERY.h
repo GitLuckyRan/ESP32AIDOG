@@ -15,8 +15,8 @@ const float VOLT_DIVIDER = 5.463f;   // 你校准后的分压系数
 const float CURR_SENSITIVITY = 0.066f; // 66mV/A
 
 // 逻辑阈值
-const float MAX_CURRENT_PROTECT = 15.0f; // 15A 保护
-const float VOLT_CUTOFF = 5.4f;          // 电池物理截止电压
+const float MAX_CURRENT_PROTECT = 25.0f; // 15A 保护
+const float VOLT_CUTOFF = 4.4f;          // 电池物理截止电压
 
 // 外部可调用函数
 void BATTERY_Init();                // 初始化引脚和采样环境

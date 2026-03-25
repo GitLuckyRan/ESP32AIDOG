@@ -1,18 +1,13 @@
 #include <motion.h>
-#include "motion_states/walk_state.h"
-#include "CamSerial.h"
 
-void MotionService::begin() { body_state.updateFeet(KinConfig::default_feet_positions); 
-    setState(&standState); }
-
-void MotionService::handleAngles() {
-    int  angles_count = 11111;  //待修复
-    for (int i = 0; i < 12 && i < angles_count; i++) {
-        angles[i] = angles[i];
-    }
+void MotionService::begin() {
+    body_state.updateFeet(KinConfig::default_feet_positions);
+    currentMode = MOTION_STATE::STAND;
+    setState(&standState);
 }
 
 void MotionService::setState(MotionState* newState) {
+    Serial.println(">>> Changing State Now!");
     if (state) {
         state->end();
     }
@@ -22,66 +17,44 @@ void MotionService::setState(MotionState* newState) {
     }
 }
 
-void MotionService::handleInput() {
-    // command.fromProto(data);
-    // if (state) state->handleCommand(command);
-}
-
-void MotionService::handleWalkGait() {    
-    MOTION_STATE mode = MOTION_STATE::REST;
-    ESP_LOGI("MotionService", "Walk Gait %d", static_cast<int>(mode));
-    if (mode ==  MOTION_STATE::REST)
+void MotionService::handleWalkGait(bool trot) {
+    if (trot)
         walkState.set_mode_trot();
     else
         walkState.set_mode_crawl();
 }
 
+void MotionService::handleMode(const String& cmd) {
+    if (cmd.length() == 0) return;
 
-//测试用，随机切换模式
-void MotionService::handleMode() {
-String Receive_cmd = CAM.SwitchCamMode(CAM.readCamSerial());
-    static MOTION_STATE currentMode = MOTION_STATE::REST; // 初始设为 REST 比较安全
+    MOTION_STATE newMode;
+    MotionState* newState;
 
-    // 只有当真正收到串口命令时，才进行状态切换
-    if (Receive_cmd.length() > 0) {
-        if (Receive_cmd.indexOf("WALK") >= 0) {
-            if (currentMode != MOTION_STATE::WALK) { // 检查防止重复进入
-                currentMode = MOTION_STATE::WALK;
-                setState(&walkState);
-            }
-        } 
-        else if (Receive_cmd.indexOf("STAND") >= 0) {
-            if (currentMode != MOTION_STATE::STAND) {
-                currentMode = MOTION_STATE::STAND;
-
-                setState(&standState);
-            }
-        } 
-        else if (Receive_cmd.indexOf("REST") >= 0) {
-            if (currentMode != MOTION_STATE::REST) {
-                currentMode = MOTION_STATE::REST;
-                setState(&restState);
-            }
-        } 
-        else {
-            Serial.printf("Warning: Unknown command received: %s\n", Receive_cmd.c_str());
-        }
-        // 打印只在切换时执行，避免刷屏
-        Serial.printf("New Mode Set: %s\n", 
-            currentMode == MOTION_STATE::REST ? "REST" : 
-            currentMode == MOTION_STATE::STAND ? "STAND" : "WALK");
+    if (cmd.indexOf("WALK") >= 0) {
+        newMode = MOTION_STATE::WALK;
+        newState = &walkState;
+    } else if (cmd.indexOf("STAND") >= 0) {
+        newMode = MOTION_STATE::STAND;
+        newState = &standState;
+    } else if (cmd.indexOf("REST") >= 0 || cmd.indexOf("LIE") >= 0) {
+        newMode = MOTION_STATE::REST;
+        newState = &restState;
+    } else {
+        Serial.printf("Warning: Unknown command: %s\n", cmd.c_str());
+        return;
     }
- 
 
+    if (newMode != currentMode) {
+        currentMode = newMode;
+        setState(newState);
+        Serial.printf("New Mode Set: %s\n", cmd.c_str());
+    }
 }
 
-
-
 bool MotionService::update(Peripherals* peripherals) {
-    handleMode();      //测试用，随机切换模式
     if (!state) return false;
     int64_t now = esp_timer_get_time();
-    float dt = (now - lastUpdate) / 1000000.0f; // Convert microseconds to seconds
+    float dt = (now - lastUpdate) / 1000000.0f;
     lastUpdate = now;
     state->updateImuOffsets(peripherals->angleY(), peripherals->angleX());
     state->step(body_state, dt);

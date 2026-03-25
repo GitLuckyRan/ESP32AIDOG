@@ -10,16 +10,26 @@ void CamSerialClass::InitCamSerial() {
 }
 
 String CamSerialClass::readCamSerial(){
-  // 1. 处理来自 CAM 的指令
-  if (CamSerial.available()) {
-    String cmd = CamSerial.readStringUntil('\n');
-    cmd.trim(); 
-    if (cmd.length() > 0) { // 过滤掉空行
-      Serial.print("💡 S3 成功接收: [");
-      Serial.print(cmd);
-      Serial.println("]");
+  // 非阻塞读取：逐字符读入缓冲区，遇到 '\n' 才返回完整命令
+  while (CamSerial.available()) {
+    char c = CamSerial.read();
+    if (c == '\n') {
+      String cmd = _rxBuffer;
+      _rxBuffer = "";
+      cmd.trim();
+      if (cmd.length() > 0) {
+        Serial.print("💡 S3 成功接收: [");
+        Serial.print(cmd);
+        Serial.println("]");
+        return cmd;
+      }
+      return "";
     }
-    return cmd;
+    _rxBuffer += c;
+    // 防止缓冲区溢出（异常情况）
+    if (_rxBuffer.length() > 64) {
+      _rxBuffer = "";
+    }
   }
   return "";
 }
@@ -30,19 +40,18 @@ String CamSerialClass::SwitchCamMode(String cmd) {
 
     if (cmd.indexOf("WALK") >= 0) {
         return "WALK";
-        // motionService.handleMode(MOTION_STATE::WALK);
+    
     } 
     else if (cmd.indexOf("STAND") >= 0) {
         return "STAND";
-        // motionService.handleMode(MOTION_STATE::STAND);
+      
     } 
     else if (cmd.indexOf("LIE") >= 0) {  
         return "REST";
-        // motionService.handleMode(MOTION_STATE::REST);
+     
     }else
     {
         return "";
-        // motionService.handleMode(MOTION_STATE::DEACTIVATED);
     }
 }
 
@@ -64,5 +73,16 @@ void CamSerialClass::sendImuDataToCam(float current_roll, float current_pitch, f
     CamSerial.println(imuPayload);
     
     lastImuTime = millis();
+  }
+}
+
+void CamSerialClass::sendBatteryDataToCam(float voltage, float current, int percentage) {
+  static unsigned long lastBatTime = 0;
+  if (millis() - lastBatTime > 1000) {
+    String batPayload = "BAT:" + String(voltage, 1) + "," +
+                        String(current, 1) + "," +
+                        String(percentage);
+    CamSerial.println(batPayload);
+    lastBatTime = millis();
   }
 }

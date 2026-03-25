@@ -38,9 +38,9 @@ void BATTERY_Update() {
     // 2. 软件滤波 (EMA)，防止机器人运动瞬时压降导致的误触发
     _filteredCurrent = (0.2f * iRaw) + (0.8f * _filteredCurrent);
 
-    if (_filteredCurrent < 0.5f) {
+    if (_filteredCurrent < 0.6f) {
         // 使用较慢的滤波，消除 ADC 抖动
-        _filteredVoltage = (0.1f * vRaw) + (0.9f * _filteredVoltage);
+        _filteredVoltage = vRaw;
     }
 
     // 3. 安全保护逻辑

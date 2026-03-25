@@ -47,10 +47,10 @@ using ServoSettings = api_ServoSettings;
 //     {302, 1, 0, 2.48f, "Servo7"},  {322, 1, -45, 2.48f, "Servo8"},  {322, 1, 90, 2.48f, "Servo9"},
 //     {302, 1, 0, 2.48f, "Servo10"}, {302, -1, 45, 2.48f, "Servo11"}, {322, -1, -90, 2.48f, "Servo12"}};
 const api_Servo defaults[12] = {
-    {282, -1, 0, 2.33f, "Servo1"}, {322, 1, -45, 2.48f, "Servo2"},  {302, 1, 90, 2.5f, "Servo3"},
-    {272, -1, 0, 2.33f, "Servo4"}, {282, -1, 45, 2.48f, "Servo5"},  {282, -1, -90, 2.33f, "Servo6"},
-    {302, 1, 0, 2.48f, "Servo7"},  {322, 1, -45, 2.48f, "Servo8"},  {322, 1, 90, 2.48f, "Servo9"},
-    {282, 1, 0, 2.48f, "Servo10"}, {272, -1, 45, 2.48f, "Servo11"}, {242, -1, -90, 2.48f, "Servo12"}};
+    {282, -1, 0, 2.33f, "Servo1"}, {322, 1, -45, 2.48f, "Servo2"},  {302, 1, 90, 2.48f, "Servo3"},
+    {272, -1, 0, 2.33f, "Servo4"}, {282, -1, 45, 2.48f, "Servo5"},  {302, -1, -90, 2.48f, "Servo6"},
+    {302, 1, 0, 2.48f, "Servo7"},  {302, 1, -45, 2.48f, "Servo8"},  {302, 1, 90, 2.48f, "Servo9"},
+    {302, 1, 0, 2.48f, "Servo10"}, {272, -1, 45, 2.48f, "Servo11"}, {302, -1, -90, 2.48f, "Servo12"}};
 
 inline ServoSettings ServoSettings_defaults() {
     ServoSettings settings = {};
@@ -105,7 +105,6 @@ class ServoController {
         } else {
             pca9685.setPWM(servo_id, 0, pwm);
         }
-        ESP_LOGI("SERVO_CONTROLLER", "Setting servo %d to %d", servo_id, pwm);
     }
 
     void updateActiveState() { is_active ? activate() : deactivate(); }
@@ -118,7 +117,7 @@ class ServoController {
             // Serial.printf("Target angle for servo %d set to %.2f\n", i + 1, new_angles[i]);
         }
     }
-    float smoothing_factor = 0.8f;
+    float smoothing_factor = 0.5f;
     void setSmoothing(float factor) { smoothing_factor = factor; }
 
     void calculatePWM() {
@@ -133,23 +132,13 @@ class ServoController {
             pwms[i] = pwm = clamp(pwm, 120, 500);
             // Serial.printf("Servo %d -> Angle: %6.2f°, PWM: %4d\n", i + 1, angles[i], pwm);
         }
-        // for (uint8_t i = 0; i < 12; i++) {
-        //     pca9685.setPWM(i, 0, pwms[i]);
-        // }
 
-
-        pca9685.setPWM(0, 0, pwms[0]);
-        pca9685.setPWM(1, 0, pwms[1]);
-        pca9685.setPWM(2, 0, pwms[2]);
-
-        pca9685.setPWM(9, 0, pwms[9]);
-        pca9685.setPWM(10, 0, pwms[10]);
-        pca9685.setPWM(11, 0, pwms[11]);
-
-        delayMicroseconds(2000);
-        for (uint8_t i = 3; i < 9; i++) {
+        for (uint8_t i = 0; i < 12; i++) {
+    // 忽略所有计算出的动作，直接发送预设的中位脉冲值
             pca9685.setPWM(i, 0, pwms[i]);
         }
+
+
     }
     void update() {
        
@@ -163,6 +152,7 @@ class ServoController {
         pca9685.setPWMFreq(FACTORY_SERVO_PWM_FREQUENCY);
         pca9685.sleep();
     }
+
 
     SERVO_CONTROL_STATE control_state = SERVO_CONTROL_STATE::DEACTIVATED;
 

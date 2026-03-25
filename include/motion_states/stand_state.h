@@ -7,7 +7,7 @@ class StandState : public MotionState {
     const char *name() const override { return "Stand"; }
 
     virtual void begin() {
-        target_body_state.xm = 0;
+        target_body_state.xm = 0.01f;
         target_body_state.ym = KinConfig::min_body_height + 0.5 * KinConfig::body_height_range;
         target_body_state.zm = 0;
         target_body_state.omega = 0;
@@ -26,7 +26,7 @@ class StandState : public MotionState {
     }
 
     void step(body_state_t &body_state, float dt = 0.02f) override {
-        lerpToBody(body_state, true, 0.1f);
+        lerpToBody(body_state, false, 0.3f);
         updateFeet(body_state);
     }
 };

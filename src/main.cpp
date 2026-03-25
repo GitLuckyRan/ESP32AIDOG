@@ -15,8 +15,8 @@ CamSerialClass CAM;
 
 
 
-void IRAM_ATTR SpotControlLoopEntry(void *) {
-    Serial.printf("main", "Control task starting");
+void SpotControlLoopEntry(void *) {
+    Serial.println("[main] Control task starting");
     TickType_t xLastWakeTime = xTaskGetTickCount();
     const TickType_t xFrequency = pdMS_TO_TICKS(20);
     CAM.InitCamSerial();
@@ -42,7 +42,10 @@ void IRAM_ATTR SpotControlLoopEntry(void *) {
 
     for (;;) {
         WARN_IF_SLOW(SpotControlLoopEntry, 20);
-        CAM.SwitchCamMode(CAM.readCamSerial());
+        String cmd = CAM.SwitchCamMode(CAM.readCamSerial());
+        if (cmd.length() > 0) {
+            motionService.handleMode(cmd);
+        }
         peripherals.update();
         motionService.update(&peripherals);
         servoController.setAngles(motionService.getAngles());
@@ -71,7 +74,7 @@ void setup() {
     // Serial.printf("磁力计航向: %.2f°\n", peripherals.getHeading());
     
     
-    xTaskCreatePinnedToCore(SpotControlLoopEntry, "Control task", 8192*2, nullptr, 3, nullptr, 1);
+    xTaskCreatePinnedToCore(SpotControlLoopEntry, "Control task", 8192*2, nullptr, 5, nullptr, 1);
 }
 
 
@@ -81,6 +84,7 @@ void loop() {
 //   CAM.SwitchCamMode(CAM.readCamSerial());
 //   peripherals.update();
   CAM.sendImuDataToCam(peripherals.angleY(), peripherals.angleX(), peripherals.angleZ());
+  CAM.sendBatteryDataToCam(BATTERY_GetVoltage(), BATTERY_GetCurrent(), BATTERY_GetPercentage());
   BATTERY_Update();
     // 2. 输出当前电压、电流和电量百分比
     // BATTERY_GetVoltage();
@@ -90,7 +94,7 @@ void loop() {
   Serial.printf("电压: %.2f V, 电流: %.2f A, 电量: %d%%, 安全断开: %s\n", 
                   BATTERY_GetVoltage(), BATTERY_GetCurrent(), BATTERY_GetPercentage(),
                   BATTERY_IsSafetyCutoff() ? "是" : "否");
-  delay(500); // 每 100ms 发送一次数据
+  delay(1000); // 每 1000ms 发送一次数据
   // 1. 获取外设数据（保持习惯）
 
 }

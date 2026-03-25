@@ -13,9 +13,12 @@ public:
     void InitCamSerial() ;
     String readCamSerial();
     void sendImuDataToCam(float current_roll, float current_pitch, float current_yaw);
+    void sendBatteryDataToCam(float voltage, float current, int percentage);
     String SwitchCamMode(String cmd);
     String cmd = "";
 
+private:
+    String _rxBuffer = "";  // 非阻塞读取缓冲区
 };
 extern CamSerialClass CAM;
 #endif 
