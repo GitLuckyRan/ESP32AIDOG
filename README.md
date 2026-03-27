@@ -9,8 +9,10 @@
 <p align="center">
   <img src="docs/Web.jpg" width="600" alt="ESP32 控制页面图">
 </p>
+<p align="center">
+  <video src=" https://github.com/user-attachments/assets/468628a1-0487-466f-b019-bb2a74865498" width="600" controls></video>
+</p>
 
- https://github.com/user-attachments/assets/468628a1-0487-466f-b019-bb2a74865498
 
 
 ---
