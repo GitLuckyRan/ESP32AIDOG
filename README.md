@@ -6,9 +6,13 @@
 <p align="center">
   <img src="docs/top_view.jpg" width="600" alt="ESP32 四足机器人实物图">
 </p>
+<p align="center">
+  <img src="docs/Web.jpg" width="600" alt="ESP32 控制页面图">
+</p>
+
 
 <p align="center">
-  <a href="https://your-video-link">📹 运动演示视频</a>
+  <a href="https://github.com/GitLuckyRan/ESP32AIDOG/blob/main/docs/work.mp4">📹 运动演示视频</a>
 </p>
 
 ---
