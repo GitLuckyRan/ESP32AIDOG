@@ -4,7 +4,7 @@
 
 <!-- 在下方替换为你的实拍图片/视频链接 -->
 <p align="center">
-  <img src="docs/robot.jpg" width="600" alt="ESP32 四足机器人实物图">
+  <img src="docs/top_view.jpg" width="600" alt="ESP32 四足机器人实物图">
 </p>
 
 <p align="center">
