@@ -3,16 +3,24 @@
 > 基于 ESP32 + FreeRTOS 的 SpotMicro 四足机器人，实现 50Hz 实时控制环、三自由度逆运动学解算与贝塞尔曲线步态规划。
 
 <!-- 在下方替换为你的实拍图片/视频链接 -->
-<p align="center">
-  <img src="docs/top_view.jpg" width="600" alt="ESP32 四足机器人实物图">
-</p>
-<p align="center">
-  <img src="docs/Web.jpg" width="600" alt="ESP32 控制页面图">
-</p>
-<p align="center">
-  <video src=" https://github.com/user-attachments/assets/468628a1-0487-466f-b019-bb2a74865498" width="600" controls></video>
-</p>
-
+<div align="center">
+  <table>
+    <tr>
+      <td align="center">
+        <img src="docs/top_view.jpg" width="400"><br><b>实物图</b>
+      </td>
+      <td align="center">
+        <img src="docs/Web.jpg" width="400"><br><b>控制页面</b>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" align="center">
+        <video src="https://github.com/user-attachments/assets/468628a1-0487-466f-b019-bb2a74865498" width="800" controls></video>
+        <br><b>演示视频</b>
+      </td>
+    </tr>
+  </table>
+</div>
 
 
 ---
