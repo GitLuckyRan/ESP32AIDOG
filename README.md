@@ -12,7 +12,7 @@
 
 
 <p align="center">
-  <a href="https://github.com/GitLuckyRan/ESP32AIDOG/blob/main/docs/work.mp4">📹 运动演示视频</a>
+  <a href="https://github.com/GitLuckyRan/ESP32AIDOG/issues/1#issuecomment-4142859631">📹 运动演示视频</a>
 </p>
 
 ---
