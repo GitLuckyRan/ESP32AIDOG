@@ -10,10 +10,8 @@
   <img src="docs/Web.jpg" width="600" alt="ESP32 控制页面图">
 </p>
 
+ https://github.com/user-attachments/assets/468628a1-0487-466f-b019-bb2a74865498
 
-<p align="center">
-  https://github.com/user-attachments/assets/468628a1-0487-466f-b019-bb2a74865498
-</p>
 
 ---
 
